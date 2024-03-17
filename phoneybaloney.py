@@ -233,8 +233,6 @@ def auth_to_openai():
 
 auth_to_openai()
 
-#openai.api_key = "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"
-
 # Grabs valid scenarios
 scenarios = scenarios.get_scenarios()
 
