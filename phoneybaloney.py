@@ -168,22 +168,36 @@ def speak_and_print(content, speaker, voice_name, language_code):
                 speak_with_google_cloud(cleaned_sentence, voice_name, language_code)
 
             
-def get_audio_input(prompt):
+def get_audio_input(prompt, retries=2):
     recognizer = sr.Recognizer()
     with sr.Microphone() as source:
         if prompt:
-            print()
-            print('*'*40,"\nSpeak now...")
-        audio = recognizer.listen(source)
-    try:
-        user_input = recognizer.recognize_google(audio)
-        print("\nParsed Input:", user_input)
-    except sr.UnknownValueError:
-        return None
-    except sr.RequestError as e:
-        print("Could not request results from Google Speech Recognition service; {0}".format(e))
-        return None
-    return user_input
+            print("\n" + '*'*40 + "\nSpeak now...")
+        try:
+            # Listen for user input with a 15-second timeout for silence
+            audio = recognizer.listen(source, timeout=15)
+            user_input = recognizer.recognize_google(audio)
+            print("\nParsed Input:", user_input)
+            return user_input
+        except sr.WaitTimeoutError:
+            if retries > 0:
+                # If the user doesn't say anything for 15 seconds and retries are left
+                print("\nNo response detected. Asking if the user is there...")
+                speak_and_print("Are you there?", "System", selected_scenario['voice_name'], selected_scenario['language_code'])
+                # Wait again for user input, reducing the retry counter
+                return get_audio_input(prompt, retries-1)
+            else:
+                # No retries left, make the announcement and exit
+                print("\nI am disconnecting the call now, please try us again later.")
+                speak_and_print("I am disconnecting the call now, please try us again later.", "System", selected_scenario['voice_name'], selected_scenario['language_code'])
+                sys.exit()  # This will terminate the script
+        except sr.UnknownValueError:
+            # If Google Speech Recognition could not understand the audio
+            return None
+        except sr.RequestError as e:
+            # If there was an issue with the Google Speech Recognition request
+            print("Could not request results from Google Speech Recognition service; {0}".format(e))
+            return None
 
 def process_voice_command(user_input):
     """
