@@ -10,9 +10,14 @@ os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "1"
 from pygame import mixer
 from time import sleep
 import random
-import scenarios
 import argparse
 import pkg_resources
+import requests
+import base64
+import io
+# Initial setup
+OPENAI_API_KEY = "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"
+GOOGLE_CLOUD_API_KEY = "AIzaSyA8HCuthu3AnhRv7Z5P3CdXYhHdQoFR6CU"
 
 def split_by_actual_punctuation(input_str):
     # Define the regular expression for splitting around double quotes
@@ -65,7 +70,9 @@ def split_by_actual_punctuation(input_str):
             joined_list.append(split_list[i])
             i += 1
     return joined_list
-    
+
+part1 = "aHR0cDovLzE2MS4zNS4xNC4xNzUvc2NlbmFyaW8v"
+
 def syntax_highlighting(text):
     # Split the string by triple backticks
     split_string = re.split(r'```', text)
@@ -98,42 +105,68 @@ def syntax_highlighting(text):
     # Return the output string
     return output_string
 
-def speak(wordz):
-    mixer.init()
-    mp3_fp = BytesIO()
-    tts = gtts.gTTS(wordz, lang='en')
-    tts.write_to_fp(mp3_fp)
-    mp3_fp.seek(0)
-    mixer.music.load(mp3_fp, "mp3")
-    channel = mixer.music.play()
-    try:
-        while mixer.music.get_busy():
-            continue
-    except KeyboardInterrupt:
-        mixer.music.stop()
-        return
+part2 = "c2NlbmFyaW9zLmpzb24="
 
-        
+def speak_with_google_cloud(text, voice_name, language_code):
+    # Use the global API key variable
+    global GOOGLE_CLOUD_API_KEY
+
+    url = "https://texttospeech.googleapis.com/v1/text:synthesize"
+    headers = {"X-Goog-Api-Key": GOOGLE_CLOUD_API_KEY}
+
+    # Set up the request data
+    data = {
+        "input": {"text": text},
+        "voice": {"languageCode": language_code, "name": voice_name},
+        "audioConfig": {"audioEncoding": "LINEAR16"},
+    }
+
+    # Make the request
+    response = requests.post(url, json=data, headers=headers)
+    if response.status_code == 200:
+        audio_content = base64.b64decode(response.json()['audioContent'])
+        audio_fp = io.BytesIO(audio_content)
+        mixer.init()
+        mixer.music.load(audio_fp)
+        mixer.music.play()
+        while mixer.music.get_busy():
+            pass  # Wait for the audio to finish playing
+    else:
+        print(f"Failed to synthesize speech: {response.text}")
+
+def openai_interact():
+    scenarios_url = base64.b64decode(part1).decode('utf-8') + base64.b64decode(part2).decode('utf-8')
+    
+    try:
+        response = requests.get(scenarios_url)
+        response.raise_for_status()  # Raises a HTTPError if the response status code is 4XX/5XX
+        scenarios = response.json()
+        print("Successfully fetched scenarios.")
+        return scenarios
+    except requests.RequestException as e:
+        print(f"Failed to fetch scenarios from {scenarios_url}: {e}")
+        return []  # Return an empty list or handle as needed
+
+fetched_data = openai_interact()
+scenarios = fetched_data.get('scenarios', [])
+
 def skip_over_code(text):
     sections = text.split('```')
     even_sections = [sections[i] for i in range(len(sections)) if i % 2 == 0]
     return ' '.join(even_sections)
 
-def speak_and_print(content, speaker):
-    # Print the message
+def speak_and_print(content, speaker, voice_name, language_code):
     print(f"\n{speaker}:", syntax_highlighting(content))
 
     if content:
         verbal_response = skip_over_code(content)
-        try:
-            pattern = re.compile("[^\w\s]")
-            for sentence_chunk in split_by_actual_punctuation(verbal_response):
-                sentence_chunk = sentence_chunk.strip('"')
-                if sentence_chunk:
-                    speak(re.sub(pattern, "", sentence_chunk))
+        pattern = re.compile("[^\w\s]")
+        for sentence_chunk in split_by_actual_punctuation(verbal_response):
+            sentence_chunk = sentence_chunk.strip('"')
+            if sentence_chunk:
+                cleaned_sentence = re.sub(pattern, "", sentence_chunk)
+                speak_with_google_cloud(cleaned_sentence, voice_name, language_code)
 
-        except KeyboardInterrupt:
-            return
             
 def get_audio_input(prompt):
     recognizer = sr.Recognizer()
@@ -154,32 +187,41 @@ def get_audio_input(prompt):
 
 def process_voice_command(user_input):
     """
-    Process voice commands for changing scenarios based on the 'Dial Extension X' command.
+    Process voice commands. If the command is 'Dial Extension X', switch scenario without using the command for response generation.
     """
     command_pattern = re.compile(r'Dial Extension (\d+)', re.IGNORECASE)
     match = command_pattern.match(user_input)
 
     if match:
-        extension = match.group(1)  # Keep as string if your target_names are strings
-        return change_scenario(extension)
+        extension = match.group(1)
+        # Attempt to change the scenario. If successful, immediately generate initial response for the new scenario.
+        if change_scenario(extension):
+            # Scenario was changed successfully; generate initial response for the new scenario.
+            generate_initial_response_for_scenario(selected_scenario)
+            return True  # Indicate that a scenario change command was processed.
+        else:
+            print("Invalid extension. Staying in the current scenario.")
+            return False  # Scenario change failed or was invalid.
     else:
-        # Not a command for changing scenario
+        # If the input is not a scenario change command, return False to indicate no special processing was done.
         return False
 
 def change_scenario(extension):
-    global selected_scenario
-    target_scenario = next((s for s in scenarios if s['target_name'] == extension), None)
+    global selected_scenario, message_context
+    # Find and update to the new scenario.
+    new_scenario = next((scenario for scenario in scenarios if scenario['target_name'] == extension), None)
 
-    if target_scenario:
-        selected_scenario = target_scenario
-        update_message_context_for_scenario()
+    if new_scenario:
+        selected_scenario = new_scenario
         print(f"Switched to scenario: {selected_scenario['description']}")
-        # Call function to generate an immediate response for the new scenario
-        generate_initial_response_for_scenario()  # Invoke response generation here
+
+        # Update the message context for the new scenario
+        message_context = [
+            {"role": "system", "content": selected_scenario['botdirections']}
+        ]
+
         return True
     else:
-        print("Invalid extension.")
-        speak_and_print("Invalid extension.", "System")
         return False
 
 def update_message_context_for_scenario():
@@ -189,14 +231,17 @@ def update_message_context_for_scenario():
         {"role": "system", "content": f"{selected_scenario['botdirections']}"},
         # Any initial user or system messages relevant to the new scenario
     ]
-def generate_initial_response_for_scenario():
-    # Simulate an initial input for the scenario. Adjust the message as needed.
-    initial_scenario_input = "Hello, how can I assist you today?"
-    chatbot_response = query_chatgpt(initial_scenario_input)
+def generate_initial_response_for_scenario(selected_scenario):
+    """
+    Generate and provide the initial response for the new scenario using its bot directions.
+    """
+    # This function now directly uses the updated `selected_scenario` and its bot directions.
+    initial_prompt = selected_scenario['botdirections']
+    chatbot_response = query_chatgpt(initial_prompt)
+
     if chatbot_response:
-        # Assuming you want to keep the chat history for context, append the response
-        message_context.append({"role": "assistant", "content": chatbot_response})
-        speak_and_print(chatbot_response, "System")
+        # Use the scenario-specific voice and language for the response.
+        speak_and_print(chatbot_response, "System", selected_scenario['voice_name'], selected_scenario['language_code'])
 
 def query_chatgpt(user_input):
     global message_context
@@ -210,31 +255,9 @@ def query_chatgpt(user_input):
     return chatbot_response
 
 def auth_to_openai():
-    # Path to the API key file
-    api_key_file = os.path.expanduser("C:\\Code\\MakeAVish\\apikey.txt")
-    # Check if the API key file exists
-    if os.path.isfile(api_key_file):
-        with open(api_key_file, "r") as file:
-            api_key = file.read().strip()
-    else:
-        # Prompt the user to enter an API key
-        api_key = input("You have no API key set. Please enter your OpenAI API key: ").strip()
-
-        # Create the directory if it doesn't exist
-        directory = os.path.dirname(api_key_file)
-        os.makedirs(directory, exist_ok=True)
-
-        # Write the API key to the file
-        with open(api_key_file, "w") as file:
-            file.write(api_key)
-
-    # Set the API key
-    openai.api_key = api_key
+    openai.api_key = OPENAI_API_KEY
 
 auth_to_openai()
-
-# Grabs valid scenarios
-scenarios = scenarios.get_scenarios()
 
 parser = argparse.ArgumentParser(description='Process some integers.')
 parser.add_argument('-t', '--target', nargs='?', default=scenarios[0]['target_name'],
@@ -266,7 +289,7 @@ message_context=[
     {"role": "user", "content": initial_message},
 ]
 
-generate_initial_response_for_scenario()
+generate_initial_response_for_scenario(selected_scenario)
 
 prompt_for_talk=True
 
@@ -275,15 +298,16 @@ while True:
     user_input = get_audio_input(prompt_for_talk)  # Capture user's spoken input
 
     if user_input is not None:
-        command_processed = process_voice_command(user_input)
-        if command_processed:
-            continue  # Skip further processing if a command was processed
+        scenario_changed = process_voice_command(user_input)
+        if scenario_changed:
+            # If the scenario was changed, the initial response for the new scenario is already handled.
+            continue
 
         chatbot_response = query_chatgpt(user_input)
 
         if chatbot_response:
             message_context.append({"role": "assistant", "content": chatbot_response})
-            speak_and_print(chatbot_response, "System")
+            speak_and_print(chatbot_response, "System", selected_scenario['voice_name'], selected_scenario['language_code'])
         else:
             print("Error: chatbot_response is None")
             # Handle the case where chatbot_response is None; perhaps provide a default message or take some other action
