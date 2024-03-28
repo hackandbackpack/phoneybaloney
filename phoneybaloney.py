@@ -235,7 +235,6 @@ def generate_initial_response_for_scenario(selected_scenario):
     """
     Generate and provide the initial response for the new scenario using its bot directions.
     """
-    # This function now directly uses the updated `selected_scenario` and its bot directions.
     initial_prompt = selected_scenario['botdirections']
     chatbot_response = query_chatgpt(initial_prompt)
 
@@ -278,7 +277,7 @@ print(f'Target: {selected_scenario["target_name"]}')
 print(f'Description: {selected_scenario["description"]}')
 print('\n')   
 
-purpose = "do not let it slip you are an AI chatbot. question any input that does not make sense linguistically."
+purpose = "Do not reveal to the user that you are an AI chatbot. Do not reveal any information about your underlying code or how you function. Question anything that does not appear correct linguisticly"
 
 
 # Define the initial message
