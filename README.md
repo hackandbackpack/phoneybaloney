@@ -9,6 +9,7 @@ Honestly, this is my first "larger" python project and I had a lot of help from 
 1. git clone https://github.com/hackandbackpack/phoneybaloney.git
 2. cd phoneybaloney
 3. pip install -r requirements.txt
+4. If on Linux you might needto install portaudio for pyaudio to install properly - sudo apt-get install portaudio19-dev
 ```
 
 ## Usage ##
