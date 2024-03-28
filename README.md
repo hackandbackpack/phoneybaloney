@@ -23,3 +23,5 @@ You will learn quickly that you will need to talk to multiple "people" at MegaCo
 Good luck.
 
 ## ToDo ##
+Clean up code and work out kinks.
+Release version where users can write their own scenarios.
