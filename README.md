@@ -26,7 +26,9 @@ Good luck.
 
 ## Tips ##
 There are no external sources that have information on Megacorp. So anything you need you can learn from a Megacorp employee ... if you ask the right questions.
+
 For some added realism I added male and female voices, however OpenAI doesn't recognize whether the caller (you) are male or female should you want to pretend to be someone else.
+
 There are three flags hidden in the form of passwords. But people won't just give you their passwords ... or will they?
 
 ## ToDo ##
