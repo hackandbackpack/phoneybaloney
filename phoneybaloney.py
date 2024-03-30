@@ -17,8 +17,8 @@ import base64
 import io
 import sys
 # Initial setup
-OPENAI_API_KEY = "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"
-GOOGLE_CLOUD_API_KEY = "AIzaSyA8HCuthu3AnhRv7Z5P3CdXYhHdQoFR6CU"
+OPENAI_API_KEY = "XXXXXXX"
+GOOGLE_CLOUD_API_KEY = "XXXXXXX"
 
 def split_by_actual_punctuation(input_str):
     # Define the regular expression for splitting around double quotes
