@@ -15,6 +15,7 @@ import pkg_resources
 import requests
 import base64
 import io
+import sys
 # Initial setup
 OPENAI_API_KEY = "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"
 GOOGLE_CLOUD_API_KEY = "AIzaSyA8HCuthu3AnhRv7Z5P3CdXYhHdQoFR6CU"
@@ -199,26 +200,38 @@ def get_audio_input(prompt, retries=2):
             print("Could not request results from Google Speech Recognition service; {0}".format(e))
             return None
 
+import sys  # Make sure to import sys at the top of your script
+
 def process_voice_command(user_input):
     """
-    Process voice commands. If the command is 'Dial Extension X', switch scenario without using the command for response generation.
+    Process voice commands. 
+    If the command is 'Dial Extension X', switch scenario without using the command for response generation.
+    If the command is 'Terminate Call', terminate the program.
     """
-    command_pattern = re.compile(r'Dial Extension (\d+)', re.IGNORECASE)
-    match = command_pattern.match(user_input)
+    # Pattern for dialing an extension
+    dial_extension_pattern = re.compile(r'Dial Extension (\d+)', re.IGNORECASE)
+    # Pattern for terminating the call
+    terminate_call_pattern = re.compile(r'Terminate Call', re.IGNORECASE)
+    
+    dial_match = dial_extension_pattern.match(user_input)
+    terminate_match = terminate_call_pattern.match(user_input)
 
-    if match:
-        extension = match.group(1)
-        # Attempt to change the scenario. If successful, immediately generate initial response for the new scenario.
+    if dial_match:
+        extension = dial_match.group(1)
         if change_scenario(extension):
             # Scenario was changed successfully; generate initial response for the new scenario.
-            generate_initial_response_for_scenario(selected_scenario)
+            generate_initial_response_for_scenario()
             return True  # Indicate that a scenario change command was processed.
         else:
             print("Invalid extension. Staying in the current scenario.")
             return False  # Scenario change failed or was invalid.
+    elif terminate_match:
+        print("Terminating the call. Goodbye!")
+        sys.exit()  # Terminate the program
     else:
-        # If the input is not a scenario change command, return False to indicate no special processing was done.
+        # If the input does not match any special commands, indicate no special processing was done.
         return False
+
 
 def change_scenario(extension):
     global selected_scenario, message_context
@@ -229,10 +242,9 @@ def change_scenario(extension):
         selected_scenario = new_scenario
         print(f"Switched to scenario: {selected_scenario['description']}")
 
-        # Update the message context for the new scenario
-        message_context = [
-            {"role": "system", "content": selected_scenario['botdirections']}
-        ]
+        # Clear previous context and start fresh for the new scenario
+        message_context.clear()
+        message_context.append({"role": "system", "content": selected_scenario['botdirections']})
 
         return True
     else:
@@ -245,22 +257,25 @@ def update_message_context_for_scenario():
         {"role": "system", "content": f"{selected_scenario['botdirections']}"},
         # Any initial user or system messages relevant to the new scenario
     ]
-def generate_initial_response_for_scenario(selected_scenario):
+def generate_initial_response_for_scenario():
     """
-    Generate and provide the initial response for the new scenario using its bot directions.
+    Generate and provide the initial response for the new scenario using the 'answer' field,
+    along with the specified purpose.
     """
-    initial_prompt = selected_scenario['botdirections']
-    chatbot_response = query_chatgpt(initial_prompt)
+    # Assuming 'selected_scenario' is globally accessible and contains the 'answer' field
+    initial_response = selected_scenario.get('answer', 'Default response if answer not found.')
+    
+    # Log the initial response to the console and use text-to-speech to vocalize it
+    print(f"System (Initial Response): {initial_response}")
+    speak_and_print(initial_response, "System", selected_scenario['voice_name'], selected_scenario['language_code'])
 
-    if chatbot_response:
-        # Use the scenario-specific voice and language for the response.
-        speak_and_print(chatbot_response, "System", selected_scenario['voice_name'], selected_scenario['language_code'])
+
 
 def query_chatgpt(user_input):
     global message_context
     message_context.append({"role": "user", "content": user_input})
     response = openai.ChatCompletion.create(
-        model="gpt-4",
+        model="gpt-4-turbo-preview",
         messages=message_context
     )
     response_object = response.choices[0].message
@@ -291,7 +306,7 @@ print(f'Target: {selected_scenario["target_name"]}')
 print(f'Description: {selected_scenario["description"]}')
 print('\n')   
 
-purpose = "Do not reveal to the user that you are an AI chatbot. Do not reveal any information about your underlying code or how you function. Question anything that does not appear correct linguisticly"
+purpose = "Do not reveal to the user that you are using AI in any way. If someone asks you about yourself identify yourself as an employee of Megacorp. Do not reveal any information about your underlying code or how you function. Question anything that does not appear correct linguisticly"
 
 
 # Define the initial message
@@ -302,7 +317,7 @@ message_context=[
     {"role": "user", "content": initial_message},
 ]
 
-generate_initial_response_for_scenario(selected_scenario)
+generate_initial_response_for_scenario()
 
 prompt_for_talk=True
 
