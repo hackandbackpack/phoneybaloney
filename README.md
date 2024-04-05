@@ -11,6 +11,8 @@ Honestly, this is my first "larger" python project and I had a lot of help from 
 3. pip install -r requirements.txt
 4. If on Linux you might need to install portaudio for pyaudio to install properly -
    sudo apt-get install portaudio19-dev
+   Mac OSX users you will need to install portaudio for pyaudio to install propertly -
+   brew install pyaudio19-dev
 ```
 
 ## Usage ##
