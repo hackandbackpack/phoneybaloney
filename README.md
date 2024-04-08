@@ -15,6 +15,10 @@ Honestly, this is my first "larger" python project and I had a lot of help from 
    brew install portaudio19-dev
 ```
 
+## Website
+
+There is a website you can use as well in the web folder
+
 ## Usage ##
 python3 phoneybaloney.py
 

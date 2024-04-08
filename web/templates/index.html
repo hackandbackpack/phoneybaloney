@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="icon" href="data:;base64,iVBORw0KGgo=">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Audio Recorder</title>
+    <style>
+        #recordButton {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background-color: #008080; /* teal */
+            color: white;
+            font-size: 16px;
+            text-align: center;
+            line-height: 50px;
+            cursor: pointer;
+            padding: 20px;
+            -webkit-user-select: none;
+            -khtml-user-select: none;
+            -moz-user-select: none;
+            -o-user-select: none;
+            -user-select: none
+        }
+        #beginButton {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background-color: #008080; /* teal */
+            color: white;
+            font-size: 16px;
+            text-align: center;
+            line-height: 50px;
+            cursor: pointer;
+            padding: 20px;
+        }
+        .center {
+            display: flex;
+            //justify-content: center;
+        }
+    </style>
+</head>
+<body>
+    <h1>Social Engineering the AI</h1>
+    <div class="center">
+    <div id="beginButton" onmouseup="beginFunction()">Click to Begin</div>
+    <div id="recordButton" onmousedown="startRecording()" onmouseup="stopRecording()" ontouchstart="startRecording()" ontouchend="stopRecording()">Click and<br>Hold to Talk</div>
+    </div>
+    <p></p>
+
+    <p id="ca">Commands available: "Dial Extension" or "Terminate Call"</p></br>
+    </br>
+    <audio id="audioPlayer" controls></audio>
+
+    <div id="audioContainer"></div>
+    
+    <script>
+        const cap = document.getElementById('ca');
+        cap.style.display = 'none';
+        const rb = document.getElementById('recordButton');
+        rb.style.display = 'none';
+        const bb = document.getElementById('beginButton');
+        const ap = document.getElementById('audioPlayer');
+        
+
+        const audioPlayer = document.getElementById('audioPlayer');
+        audioPlayer.style.display = 'none';
+
+        let chunks = [];
+        let recorder;
+        let id;
+
+        async function startRecording() {
+            event.preventDefault();
+            ap.pause();
+            const button = document.getElementById('recordButton');
+            button.style.backgroundColor = '#c0392b'; // Darker shade of red
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            recorder = new MediaRecorder(stream);
+
+            recorder.ondataavailable = e => {
+                chunks.push(e.data);
+            };
+
+            recorder.onstop = async () => {
+                const audioBlob = new Blob(chunks, { type: 'audio/webm' });
+                const audioUrl = URL.createObjectURL(audioBlob);
+                const audioElement = document.createElement('audio');
+                audioElement.controls = true;
+                audioElement.src = audioUrl;
+                audioContainer.appendChild(audioElement);
+            };
+
+            chunks = [];
+            recorder.start();
+        }
+
+        function stopRecording() {
+            //event.preventDefault();
+            recorder.stop();
+            const button = document.getElementById('recordButton');
+            button.style.backgroundColor = '#008080'; // Original color
+            recorder.onstop = async () => {
+              submitRecording();
+            };
+        }
+
+        async function submitRecording() {
+            const audioBlob = new Blob(chunks, { type: 'audio/webm' });
+            const formData = new FormData();
+            formData.append('audio', audioBlob, 'recording.webm');
+
+            if (typeof id !== 'undefined') {
+                formData.append('id', id); // Include the id in the form data
+            } else {
+                alert('ID is not set. Click begin first.');
+                return;
+            }
+
+            try {
+                const response = await fetch('process_audio', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const responseData = await response.json();
+                const responseElement = document.createElement('p');
+                responseElement.textContent = responseData.text
+                const responseElement2 = document.createElement('p'); 
+                responseElement2.textContent += responseData.systemText;
+
+                // Append the response message
+                audioContainer.innerHTML = '';
+                audioContainer.appendChild(responseElement);
+                audioContainer.appendChild(responseElement2);
+                //alert(responseData.systemText)
+                synthesizeSpeech(responseData.systemText,id)
+            } catch (error) {
+                console.error('Error submitting recording:', error);
+            }
+        }
+        //beginButton.addEventListener('click', beginFunction);
+
+        function beginFunction(){
+            bb.style.display = 'none';
+            audioPlayer.style.display = 'inline';
+            cap.style.display = 'inline';
+            rb.style.display = 'inline';
+            var url = '/begin';
+            fetch(url)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                id = data.id; 
+                //console.log(data.text);
+                const responseElement = document.createElement('p');
+                responseElement.textContent = data.text;
+                audioContainer.appendChild(responseElement);
+                synthesizeSpeech(data.text,id);
+                //alert(id)
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+
+        function synthesizeSpeech(message,rid) {
+            let message2 = message.split(":")[1].trim();
+            const url = '/synthesize_speech?message=' + encodeURIComponent(message2)+"&rid="+encodeURIComponent(rid);
+            
+            fetch(url)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                const audioContent = data.audioContent;
+                const audioBlob = base64toBlob(audioContent);
+                const audioUrl = URL.createObjectURL(audioBlob);
+                const audioPlayer = document.getElementById('audioPlayer');
+                audioPlayer.src = audioUrl;
+                audioPlayer.play();
+                audioPlayer.addEventListener('ended', function() {
+                  if (message2.toLowerCase().includes('terminating the call')) {
+                    window.location.reload(); // Reload the page
+                  }
+                });
+            })
+            .catch(error => console.error('Error synthesizing speech:', error));
+        }
+
+        function base64toBlob(base64Data) {
+            const byteCharacters = atob(base64Data);
+            const byteNumbers = new Array(byteCharacters.length);
+            for (let i = 0; i < byteCharacters.length; i++) {
+                byteNumbers[i] = byteCharacters.charCodeAt(i);
+            }
+            const byteArray = new Uint8Array(byteNumbers);
+            return new Blob([byteArray], { type: 'audio/wav' }); // Adjust the type according to your audio format
+        }
+    </script>
+</body>
+</html>
+
