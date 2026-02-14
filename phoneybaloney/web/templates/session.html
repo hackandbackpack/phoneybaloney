@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block title %}PhoneyBaloney — Session{% endblock %}
+
+{% block content %}
+<div class="session-page">
+    <div class="session-header">
+        <h2 id="scenario-name">Loading...</h2>
+        <p id="scenario-objective" class="scenario-meta"></p>
+    </div>
+
+    <div class="session-main">
+        <div class="transcript-area" id="transcript">
+            <div class="transcript-welcome">
+                <p>Connecting call...</p>
+            </div>
+        </div>
+
+        <div class="status-bar" id="status-bar">
+            <span class="status-indicator" id="call-status">Connecting...</span>
+        </div>
+
+        <div class="session-controls">
+            <button class="btn btn-control" id="mute-btn" onclick="toggleMute()">
+                <span id="mute-icon">&#128266;</span> Mute
+            </button>
+            <div class="dial-group">
+                <input type="text" id="dial-input" class="form-input" placeholder="Extension #" maxlength="5">
+                <button class="btn btn-control" onclick="dialExtension()">Dial</button>
+            </div>
+            <input type="range" id="volume-slider" min="0" max="100" value="80" class="volume-slider">
+            <button class="btn btn-danger" id="end-call-btn" onclick="endCall()">End Call</button>
+        </div>
+    </div>
+
+    <div class="overlay" id="howto-overlay" style="display:none">
+        <div class="overlay-content">
+            <h2>How This Works</h2>
+            <p>You're about to make a simulated phone call. Speak naturally into your microphone to interact with the characters.</p>
+            <ul>
+                <li><strong>Listen</strong> — The character will speak to you through your speakers</li>
+                <li><strong>Speak</strong> — Talk into your microphone when you see "Listening..."</li>
+                <li><strong>Dial Extension</strong> — Enter a number and click Dial to transfer</li>
+                <li><strong>End Call</strong> — Click to hang up and save the transcript</li>
+            </ul>
+            <p>Your goal: <span id="overlay-objective"></span></p>
+            <label class="checkbox-label">
+                <input type="checkbox" id="dont-show-again"> Don't show this again
+            </label>
+            <button class="btn btn-primary" onclick="dismissOverlay()">Got it, start the call!</button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/session.js"></script>
+{% endblock %}

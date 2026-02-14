@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% block title %}PhoneyBaloney — Help{% endblock %}
+{% block nav_help %}active{% endblock %}
+
+{% block content %}
+<div class="help-page">
+    <h1>Help &amp; Documentation</h1>
+
+    <section class="help-section">
+        <h2>What is Vishing?</h2>
+        <p>Vishing (voice phishing) is a social engineering attack conducted over the phone. Attackers impersonate trusted entities to extract sensitive information like passwords, account numbers, or personal details.</p>
+        <p>PhoneyBaloney lets you practice recognizing and performing vishing techniques in a safe, controlled environment — making you better at both social engineering assessments and defending against them.</p>
+    </section>
+
+    <section class="help-section">
+        <h2>How to Use PhoneyBaloney</h2>
+        <ol>
+            <li><strong>Configure Providers</strong> — Go to <a href="/settings">Settings</a> and set up your LLM, TTS, and STT providers. Click "Test Connection" for each to verify they work.</li>
+            <li><strong>Choose a Scenario</strong> — On the <a href="/">Home</a> page, browse available scenarios. Each card shows the company, difficulty, and objective.</li>
+            <li><strong>Start a Call</strong> — Click "Start Call" on a scenario card. You'll be connected to the starting character.</li>
+            <li><strong>Have a Conversation</strong> — Speak naturally into your microphone. The character will respond through your speakers.</li>
+            <li><strong>Navigate the Company</strong> — Ask to be transferred or dial extensions to reach different departments.</li>
+            <li><strong>Achieve Your Objective</strong> — Use social engineering techniques to accomplish the stated goal.</li>
+            <li><strong>Review Your Transcript</strong> — After ending the call, a transcript is saved to the <code>transcripts/</code> folder.</li>
+        </ol>
+    </section>
+
+    <section class="help-section">
+        <h2>Tips for Beginners</h2>
+        <ul>
+            <li><strong>Start with the Beginner scenarios</strong> — They have more forgiving characters and clearer paths to success.</li>
+            <li><strong>Be confident</strong> — Characters respond to authority and confidence. Hesitation raises suspicion.</li>
+            <li><strong>Gather information</strong> — Each character knows different things. Piece together information from multiple calls.</li>
+            <li><strong>Use pretexting</strong> — Create a believable reason for your call. "I'm from IT" or "I'm calling on behalf of [manager name]" work well.</li>
+            <li><strong>Don't give up</strong> — If one approach fails, try a different angle or character.</li>
+        </ul>
+    </section>
+
+    <section class="help-section">
+        <h2>Creating Your Own Scenarios</h2>
+        <ol>
+            <li>Copy <code>scenarios/example_template.yaml</code> to a new file in the <code>scenarios/</code> directory</li>
+            <li>Fill in the metadata (company, description, difficulty, objective)</li>
+            <li>Define your characters with unique extensions, personalities, and knowledge</li>
+            <li>Add secrets or flags for users to discover</li>
+            <li>Restart PhoneyBaloney — your scenario will appear on the dashboard automatically</li>
+        </ol>
+    </section>
+
+    <section class="help-section">
+        <h2>Adding Custom Providers</h2>
+        <p>PhoneyBaloney uses a plugin-based provider system. You can add your own LLM, TTS, or STT providers by:</p>
+        <ol>
+            <li>Creating a new Python file in the appropriate <code>providers/</code> subdirectory</li>
+            <li>Subclassing the base provider class (BaseLLM, BaseTTS, or BaseSTT)</li>
+            <li>Implementing the required methods</li>
+            <li>Registering your provider in the <code>__init__.py</code></li>
+        </ol>
+        <p>See <code>docs/adding-providers.md</code> for a detailed walkthrough.</p>
+    </section>
+
+    <section class="help-section">
+        <h2>Troubleshooting</h2>
+        <div class="troubleshoot-item">
+            <h3>Microphone not detected</h3>
+            <p>Make sure your microphone is connected and not muted at the OS level. Check Settings to see if it appears in the microphone dropdown. On Windows, check your Privacy settings to ensure the browser has microphone access.</p>
+        </div>
+        <div class="troubleshoot-item">
+            <h3>Ollama not running</h3>
+            <p>Open a terminal and run <code>ollama serve</code>. If Ollama isn't installed, download it from <a href="https://ollama.ai" target="_blank">ollama.ai</a>. After installing, run <code>ollama pull llama3</code> to download the model.</p>
+        </div>
+        <div class="troubleshoot-item">
+            <h3>No sound output</h3>
+            <p>Check that your speakers/headphones are connected and the volume slider in the session page is turned up. If using pyttsx3, verify system voices exist in Settings.</p>
+        </div>
+        <div class="troubleshoot-item">
+            <h3>Slow responses</h3>
+            <p>If using Ollama, larger models (70B+) may be slow on consumer hardware. Try switching to a smaller model like <code>llama3</code> (8B). For TTS, pyttsx3 is the fastest option.</p>
+        </div>
+    </section>
+</div>
+{% endblock %}

@@ -1,0 +1,156 @@
+{% extends "base.html" %}
+{% block title %}PhoneyBaloney — Settings{% endblock %}
+{% block nav_settings %}active{% endblock %}
+
+{% block content %}
+<div class="settings-page">
+    <h1>Settings</h1>
+
+    <section class="settings-section">
+        <h2>LLM Provider <span class="info-icon" title="Controls the conversation intelligence">?</span></h2>
+        <div class="form-group">
+            <label for="llm-provider">Provider:</label>
+            <select id="llm-provider" class="form-select">
+                <option value="ollama">Ollama (Free, Local)</option>
+                <option value="openai">OpenAI (Paid API)</option>
+                <option value="claude">Claude (Paid API)</option>
+            </select>
+            <button class="btn btn-secondary" onclick="testProvider('llm')">Test Connection</button>
+            <span class="test-result" id="llm-test-result"></span>
+        </div>
+        <div class="provider-config" id="llm-config">
+            <div class="config-ollama config-group">
+                <div class="form-group">
+                    <label>Model:</label>
+                    <input type="text" id="ollama-model" value="llama3" class="form-input">
+                </div>
+                <div class="form-group">
+                    <label>URL:</label>
+                    <input type="text" id="ollama-url" value="http://localhost:11434" class="form-input">
+                </div>
+            </div>
+            <div class="config-openai config-group" style="display:none">
+                <div class="form-group">
+                    <label>API Key:</label>
+                    <input type="password" id="openai-api-key" class="form-input" placeholder="sk-...">
+                </div>
+                <div class="form-group">
+                    <label>Model:</label>
+                    <input type="text" id="openai-model" value="gpt-4o" class="form-input">
+                </div>
+            </div>
+            <div class="config-claude config-group" style="display:none">
+                <div class="form-group">
+                    <label>API Key:</label>
+                    <input type="password" id="claude-api-key" class="form-input" placeholder="sk-ant-...">
+                </div>
+                <div class="form-group">
+                    <label>Model:</label>
+                    <input type="text" id="claude-model" value="claude-sonnet-4-5-20250929" class="form-input">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="settings-section">
+        <h2>TTS Provider <span class="info-icon" title="Controls voice output (text-to-speech)">?</span></h2>
+        <div class="form-group">
+            <label for="tts-provider">Provider:</label>
+            <select id="tts-provider" class="form-select">
+                <option value="pyttsx3">pyttsx3 (Free, Offline)</option>
+                <option value="coqui">Coqui TTS (Free, Neural)</option>
+                <option value="google_tts">Google Cloud TTS (Mid-tier)</option>
+                <option value="elevenlabs">ElevenLabs (Premium)</option>
+            </select>
+            <button class="btn btn-secondary" onclick="testProvider('tts')">Test Connection</button>
+            <span class="test-result" id="tts-test-result"></span>
+        </div>
+        <div class="provider-config" id="tts-config">
+            <div class="config-pyttsx3 config-group">
+                <div class="form-group">
+                    <label>Speech Rate:</label>
+                    <input type="number" id="pyttsx3-rate" value="175" class="form-input">
+                </div>
+            </div>
+            <div class="config-google_tts config-group" style="display:none">
+                <div class="form-group">
+                    <label>API Key:</label>
+                    <input type="password" id="google-tts-api-key" class="form-input">
+                </div>
+            </div>
+            <div class="config-elevenlabs config-group" style="display:none">
+                <div class="form-group">
+                    <label>API Key:</label>
+                    <input type="password" id="elevenlabs-api-key" class="form-input">
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <h3>Voice Browser</h3>
+            <button class="btn btn-secondary" id="load-voices-btn" onclick="loadVoices()">Load Voices</button>
+            <select id="voice-list" class="form-select" style="display:none"></select>
+        </div>
+        <div class="voice-mapping">
+            <h3>Voice Mapping</h3>
+            <div class="form-group">
+                <label>Female Default:</label>
+                <input type="text" id="voice-female" class="form-input" placeholder="Voice ID or name">
+            </div>
+            <div class="form-group">
+                <label>Male Default:</label>
+                <input type="text" id="voice-male" class="form-input" placeholder="Voice ID or name">
+            </div>
+        </div>
+    </section>
+
+    <section class="settings-section">
+        <h2>STT Provider <span class="info-icon" title="Controls voice input (speech-to-text)">?</span></h2>
+        <div class="form-group">
+            <label for="stt-provider">Provider:</label>
+            <select id="stt-provider" class="form-select">
+                <option value="whisper_local">Whisper Local (Free, Offline)</option>
+                <option value="vosk">Vosk (Free, Lightweight)</option>
+                <option value="google_stt">Google Web Speech (Free, Cloud)</option>
+                <option value="whisper_api">OpenAI Whisper API (Paid)</option>
+            </select>
+            <button class="btn btn-secondary" onclick="testProvider('stt')">Test Connection</button>
+            <span class="test-result" id="stt-test-result"></span>
+        </div>
+        <div class="provider-config" id="stt-config">
+            <div class="config-whisper_local config-group">
+                <div class="form-group">
+                    <label>Model Size:</label>
+                    <select id="whisper-model" class="form-select">
+                        <option value="tiny">Tiny (~40MB)</option>
+                        <option value="base" selected>Base (~150MB)</option>
+                        <option value="small">Small (~500MB)</option>
+                        <option value="medium">Medium (~1.5GB)</option>
+                        <option value="large">Large (~3GB)</option>
+                    </select>
+                </div>
+            </div>
+            <div class="config-vosk config-group" style="display:none">
+                <div class="form-group">
+                    <label>Model Path:</label>
+                    <input type="text" id="vosk-model-path" class="form-input" placeholder="/path/to/vosk-model">
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <label>Microphone:</label>
+            <select id="microphone-select" class="form-select">
+                <option>Loading...</option>
+            </select>
+        </div>
+    </section>
+
+    <div class="settings-actions">
+        <button class="btn btn-primary" onclick="saveSettings()">Save Settings</button>
+        <span class="save-result" id="save-result"></span>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/settings.js"></script>
+{% endblock %}

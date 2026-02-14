@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}PhoneyBaloney{% endblock %}</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    {% block head %}{% endblock %}
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-brand">
+            <span class="nav-logo">&#128222;</span>
+            <a href="/" class="nav-title">PhoneyBaloney</a>
+        </div>
+        <div class="nav-links">
+            <a href="/" class="nav-link {% block nav_home %}{% endblock %}">Home</a>
+            <a href="/settings" class="nav-link {% block nav_settings %}{% endblock %}">Settings</a>
+            <a href="/help" class="nav-link {% block nav_help %}{% endblock %}">Help</a>
+        </div>
+    </nav>
+    <main class="container">
+        {% block content %}{% endblock %}
+    </main>
+    <footer class="footer">
+        <p>PhoneyBaloney v2.0.0</p>
+    </footer>
+    <script src="/static/js/app.js"></script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

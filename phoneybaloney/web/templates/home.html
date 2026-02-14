@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+{% block title %}PhoneyBaloney — Dashboard{% endblock %}
+{% block nav_home %}active{% endblock %}
+
+{% block content %}
+<div class="dashboard">
+    <section class="status-panel">
+        <h2>Provider Status</h2>
+        <div class="status-grid" id="status-grid">
+            <div class="status-item" id="status-llm">
+                <span class="status-dot loading"></span>
+                <span class="status-label">LLM</span>
+                <span class="status-detail" id="status-llm-detail">Checking...</span>
+            </div>
+            <div class="status-item" id="status-tts">
+                <span class="status-dot loading"></span>
+                <span class="status-label">TTS</span>
+                <span class="status-detail" id="status-tts-detail">Checking...</span>
+            </div>
+            <div class="status-item" id="status-stt">
+                <span class="status-dot loading"></span>
+                <span class="status-label">STT</span>
+                <span class="status-detail" id="status-stt-detail">Checking...</span>
+            </div>
+            <div class="status-item" id="status-mic">
+                <span class="status-dot loading"></span>
+                <span class="status-label">Mic</span>
+                <span class="status-detail" id="status-mic-detail">Checking...</span>
+            </div>
+        </div>
+    </section>
+
+    <section class="scenarios-section">
+        <h2>Scenarios</h2>
+        <div class="scenario-grid" id="scenario-grid">
+            <p class="loading-text">Loading scenarios...</p>
+        </div>
+    </section>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    loadStatus();
+    loadScenarios();
+});
+
+async function loadStatus() {
+    try {
+        const resp = await fetch('/api/status');
+        const data = await resp.json();
+        updateStatusDot('llm', data.llm);
+        updateStatusDot('tts', data.tts);
+        updateStatusDot('stt', data.stt);
+        updateStatusDot('mic', data.mic);
+    } catch (e) {
+        document.querySelectorAll('.status-dot').forEach(dot => {
+            dot.className = 'status-dot error';
+        });
+    }
+}
+
+function updateStatusDot(type, info) {
+    const dot = document.querySelector(`#status-${type} .status-dot`);
+    const detail = document.getElementById(`status-${type}-detail`);
+    if (info && info.ok) {
+        dot.className = 'status-dot ok';
+        detail.textContent = info.message || 'Connected';
+    } else {
+        dot.className = 'status-dot error';
+        detail.textContent = (info && info.message) || 'Not configured';
+    }
+}
+
+async function loadScenarios() {
+    try {
+        const resp = await fetch('/api/scenarios');
+        const scenarios = await resp.json();
+        const grid = document.getElementById('scenario-grid');
+        if (scenarios.length === 0) {
+            grid.innerHTML = '<p>No scenarios found. Add .yaml files to the scenarios/ directory.</p>';
+            return;
+        }
+        grid.innerHTML = scenarios.map(s => `
+            <div class="scenario-card">
+                <div class="scenario-header">
+                    <h3>${s.company}</h3>
+                    <span class="difficulty-badge ${s.difficulty.toLowerCase()}">${s.difficulty}</span>
+                </div>
+                <p class="scenario-desc">${s.description}</p>
+                <p class="scenario-objective"><strong>Objective:</strong> ${s.objective}</p>
+                ${s.extensions_hint ? `<p class="scenario-hint">${s.extensions_hint}</p>` : ''}
+                <a href="/session?scenario=${s.filename}" class="btn btn-primary start-call-btn">Start Call</a>
+            </div>
+        `).join('');
+    } catch (e) {
+        document.getElementById('scenario-grid').innerHTML = '<p class="error-text">Failed to load scenarios.</p>';
+    }
+}
+</script>
+{% endblock %}

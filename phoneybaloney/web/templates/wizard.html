@@ -1,0 +1,156 @@
+{% extends "base.html" %}
+{% block title %}PhoneyBaloney — Setup{% endblock %}
+
+{% block content %}
+<div class="wizard-page">
+    <div class="wizard-container">
+        <div class="wizard-progress">
+            <div class="wizard-step active" data-step="1">1. Welcome</div>
+            <div class="wizard-step" data-step="2">2. LLM</div>
+            <div class="wizard-step" data-step="3">3. TTS</div>
+            <div class="wizard-step" data-step="4">4. STT</div>
+            <div class="wizard-step" data-step="5">5. Ready</div>
+        </div>
+
+        <div class="wizard-content">
+            <div class="wizard-panel active" id="step-1">
+                <h2>Welcome to PhoneyBaloney!</h2>
+                <p>PhoneyBaloney is a vishing (voice phishing) simulator for security training. You'll have voice conversations with characters, practicing social engineering in a safe environment.</p>
+                <p>Let's get you set up. This wizard will walk you through configuring three components:</p>
+                <ul>
+                    <li><strong>LLM</strong> — The brain that powers character conversations</li>
+                    <li><strong>TTS</strong> — Text-to-Speech for character voices</li>
+                    <li><strong>STT</strong> — Speech-to-Text for your microphone input</li>
+                </ul>
+                <p>Everything can be changed later in Settings.</p>
+                <button class="btn btn-primary" onclick="wizardNext()">Let's Go!</button>
+            </div>
+
+            <div class="wizard-panel" id="step-2">
+                <h2>Step 2: Choose Your LLM</h2>
+                <p>The LLM (Large Language Model) powers the intelligence behind each character's responses.</p>
+                <div class="wizard-options">
+                    <label class="wizard-option selected">
+                        <input type="radio" name="llm" value="ollama" checked>
+                        <div class="option-content">
+                            <h3>Ollama (Recommended)</h3>
+                            <p>Free, runs locally on your machine. No API key needed.</p>
+                            <p class="option-note">Requires <a href="https://ollama.ai" target="_blank">Ollama</a> installed + a model pulled.</p>
+                        </div>
+                    </label>
+                    <label class="wizard-option">
+                        <input type="radio" name="llm" value="openai">
+                        <div class="option-content">
+                            <h3>OpenAI</h3>
+                            <p>GPT models via API. High quality, paid per use.</p>
+                        </div>
+                    </label>
+                    <label class="wizard-option">
+                        <input type="radio" name="llm" value="claude">
+                        <div class="option-content">
+                            <h3>Claude</h3>
+                            <p>Anthropic Claude via API. High quality, paid per use.</p>
+                        </div>
+                    </label>
+                </div>
+                <div class="wizard-test">
+                    <button class="btn btn-secondary" onclick="wizardTest('llm')">Test Connection</button>
+                    <span class="test-result" id="wizard-llm-result"></span>
+                </div>
+                <div class="wizard-nav">
+                    <button class="btn btn-secondary" onclick="wizardPrev()">Back</button>
+                    <button class="btn btn-primary" onclick="wizardNext()">Next</button>
+                </div>
+            </div>
+
+            <div class="wizard-panel" id="step-3">
+                <h2>Step 3: Choose Your TTS</h2>
+                <p>Text-to-Speech gives each character a voice you can hear through your speakers.</p>
+                <div class="wizard-options">
+                    <label class="wizard-option selected">
+                        <input type="radio" name="tts" value="pyttsx3" checked>
+                        <div class="option-content">
+                            <h3>pyttsx3 (Recommended)</h3>
+                            <p>Free, offline. Uses your system's built-in voices. Works immediately.</p>
+                        </div>
+                    </label>
+                    <label class="wizard-option">
+                        <input type="radio" name="tts" value="coqui">
+                        <div class="option-content">
+                            <h3>Coqui TTS</h3>
+                            <p>Free, neural quality. Better voices but requires ~1GB download.</p>
+                        </div>
+                    </label>
+                    <label class="wizard-option">
+                        <input type="radio" name="tts" value="google_tts">
+                        <div class="option-content">
+                            <h3>Google Cloud TTS</h3>
+                            <p>Mid-tier quality. Requires Google Cloud API key.</p>
+                        </div>
+                    </label>
+                    <label class="wizard-option">
+                        <input type="radio" name="tts" value="elevenlabs">
+                        <div class="option-content">
+                            <h3>ElevenLabs</h3>
+                            <p>Premium quality voices. Requires ElevenLabs API key.</p>
+                        </div>
+                    </label>
+                </div>
+                <div class="wizard-nav">
+                    <button class="btn btn-secondary" onclick="wizardPrev()">Back</button>
+                    <button class="btn btn-primary" onclick="wizardNext()">Next</button>
+                </div>
+            </div>
+
+            <div class="wizard-panel" id="step-4">
+                <h2>Step 4: Microphone & STT</h2>
+                <p>Speech-to-Text listens to your microphone and converts your voice to text for the characters to understand.</p>
+                <div class="wizard-options">
+                    <label class="wizard-option selected">
+                        <input type="radio" name="stt" value="whisper_local" checked>
+                        <div class="option-content">
+                            <h3>Whisper Local (Recommended)</h3>
+                            <p>Free, offline. High accuracy. Requires ~150MB download.</p>
+                        </div>
+                    </label>
+                    <label class="wizard-option">
+                        <input type="radio" name="stt" value="google_stt">
+                        <div class="option-content">
+                            <h3>Google Web Speech</h3>
+                            <p>Free, cloud-based. No download needed but requires internet.</p>
+                        </div>
+                    </label>
+                    <label class="wizard-option">
+                        <input type="radio" name="stt" value="vosk">
+                        <div class="option-content">
+                            <h3>Vosk</h3>
+                            <p>Free, lightweight offline. Small model footprint.</p>
+                        </div>
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label>Select Microphone:</label>
+                    <select id="wizard-mic" class="form-select">
+                        <option>Detecting microphones...</option>
+                    </select>
+                </div>
+                <div class="wizard-nav">
+                    <button class="btn btn-secondary" onclick="wizardPrev()">Back</button>
+                    <button class="btn btn-primary" onclick="wizardNext()">Next</button>
+                </div>
+            </div>
+
+            <div class="wizard-panel" id="step-5">
+                <h2>You're All Set!</h2>
+                <div class="wizard-summary" id="wizard-summary"></div>
+                <p>You can change any of these settings later from the Settings page.</p>
+                <button class="btn btn-primary btn-large" onclick="wizardFinish()">Start Your First Call!</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/wizard.js"></script>
+{% endblock %}
