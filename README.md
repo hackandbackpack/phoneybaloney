@@ -259,6 +259,13 @@ Go to Settings, find the provider with the issue, and click "Test Connection" fo
 - Use pyttsx3 for voice output — it's instant since it runs locally
 - Use a smaller speech recognition model (set Whisper to `tiny` or `base` instead of `large`)
 
+**Character won't stop listening / keeps waiting for you to talk?**
+The speech recognition listens until it detects silence. If you're in a noisy room — background conversations, TV, music, fan noise, keyboard clacking — it may never hear a "pause" and will keep listening indefinitely. A few ways to deal with this:
+- **Use the mute button.** After you finish speaking, click mute. The AI processes what you said. Unmute when you're ready to talk again.
+- **Cover your mic.** Place your hand over the microphone after you finish talking. Quick and low-tech.
+- **Find a quieter spot.** A room with less background noise gives the best experience.
+- **Use a headset.** A close-range headset mic picks up your voice clearly and rejects more background noise than a laptop mic across the room.
+
 **Browser doesn't open?**
 Navigate manually to `http://localhost:8080` in any browser (Chrome, Firefox, Edge, Safari — anything works).
 
