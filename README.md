@@ -1,329 +1,287 @@
 # PhoneyBaloney
 
-A self-hosted vishing (voice phishing) simulator for penetration testers and security training. Have real-time voice conversations with AI-powered characters in configurable scenarios, practicing social engineering techniques in a safe environment.
+**A voice-based social engineering training tool.** Practice vishing (voice phishing) techniques by having real phone conversations with AI-powered characters — no real people involved, no risk, unlimited practice.
 
 Originally inspired by [MakeAVish](https://github.com/brandonscholet/MakeAVish) by Brandon Scholet.
 
 Shout out to Brandon for the original thought! Find us on Twitter [@hackandbackpack](https://twitter.com/hackandbackpack) or on Discord at [RedSiege.com/Discord](https://redsiege.com/Discord).
 
-## What is Vishing?
+## Why PhoneyBaloney?
 
-Vishing (voice phishing) is a social engineering technique where an attacker uses phone calls to manipulate people into revealing sensitive information. PhoneyBaloney lets you practice these techniques against AI characters — no real people involved, no risk, full learning.
+Vishing — voice phishing — is one of the most effective social engineering techniques in a penetration tester's toolkit. A well-crafted phone call can bypass technical controls that would stop most digital attacks. But practicing vishing is hard: you can't call real companies for training, and role-playing with colleagues only goes so far.
+
+PhoneyBaloney solves this by giving you a realistic phone simulation powered by AI. You call into a simulated company, talk to AI characters who have their own personalities, knowledge, and security protocols, and try to extract sensitive information using only your voice and your wits.
+
+**It's like a CTF, but for your voice.**
+
+### Who Is This For?
+
+- **Penetration testers** looking to sharpen their vishing skills before real engagements
+- **Security training students** learning social engineering fundamentals for the first time
+- **Red team operators** who want repeatable practice scenarios
+- **Security awareness trainers** who want to demonstrate vishing techniques in a safe, controlled environment
+- **Anyone curious** about how social engineering works and wants to try it hands-on
+
+### What Does a Session Look Like?
+
+You launch PhoneyBaloney, pick a scenario (like "MegaCorp"), and start the call. The company operator answers. From there, you talk your way through the organization — convincing employees to transfer you, give you information, or bypass security procedures. You speak into your microphone, the characters respond through your speakers, and a live transcript shows the conversation on screen.
+
+The catch? You don't know who works there, what the extensions are, or what the security procedures look like. You have to figure all of that out through conversation — just like a real vishing engagement. The scenario is a puzzle, and the only way to solve it is to talk.
 
 ## Features
 
-- **Multi-provider support** — Choose your AI brain (LLM), voice output (TTS), and voice input (STT) from multiple providers
-- **Free by default** — Runs entirely on your machine with Ollama + pyttsx3 + Whisper. Zero API keys, zero cost
-- **Web-based UI** — Clean browser interface with real-time conversation transcript, provider status dashboard, and guided setup wizard
-- **YAML scenarios** — Create and share custom scenarios. Character secrets stay hidden from the UI — users discover information through conversation, not by reading a menu
-- **Transcript logging** — Every session is saved as a markdown file for review and training debriefs
-- **Cross-platform** — Windows (priority), Mac, and Linux
-- **Extensible** — Add your own LLM, TTS, or STT providers with a simple plugin interface
+- **Real voice conversations** — Speak naturally into your microphone and hear AI characters respond. It feels like a real phone call.
+- **Challenging scenarios** — Characters have personalities, security procedures, and interlocking dependencies. Information from one character unlocks progress with another.
+- **Multiple AI options** — Choose from free local AI (runs on your machine, no cost) or premium cloud AI (OpenAI, Claude) for higher quality conversations.
+- **Multiple voice options** — Free built-in voices to get started, or premium voices from Google and ElevenLabs for maximum realism.
+- **Runs on your machine** — Everything can run locally with zero API keys and zero cost. Your conversations stay private.
+- **Web-based interface** — Clean browser UI with live conversation transcript, provider status dashboard, and guided setup wizard. No terminal experience needed.
+- **Create and share scenarios** — Write your own training scenarios and share them with your team. Character secrets stay hidden — recipients go in blind.
+- **Session transcripts** — Every conversation is automatically saved for review, debriefs, and training assessments.
+- **Cross-platform** — Works on Windows, Mac, and Linux.
 
-## Provider Options
+## How the AI Works (Plain English)
 
-PhoneyBaloney supports multiple providers at every layer. Pick what works for your budget and hardware.
+PhoneyBaloney connects three types of AI together:
 
-### LLM Providers (the AI brain behind conversations)
+1. **The Brain** — An AI language model that reads the character's personality and your conversation, then generates what the character says next. This is the same technology behind ChatGPT and Claude. You can run it for free on your own computer using Ollama, or use a cloud service.
 
-| Provider | Cost | Quality | Requirements | Best For |
-|----------|------|---------|-------------|----------|
-| **Ollama** | Free | Good | [Ollama](https://ollama.ai) installed locally, ~4GB RAM | Privacy-conscious users, offline use, no budget |
-| **OpenAI** | Paid | Excellent | API key from [platform.openai.com](https://platform.openai.com) | Best conversation quality, fast responses |
-| **Claude** | Paid | Excellent | API key from [console.anthropic.com](https://console.anthropic.com) | Nuanced character roleplay |
+2. **The Voice** — A text-to-speech engine that converts the character's text response into spoken audio you hear through your speakers. Ranges from free built-in computer voices to premium human-like voices.
 
-### TTS Providers (voice output — what you hear)
+3. **The Ears** — A speech recognition engine that listens to your microphone and converts your spoken words into text the AI brain can understand. Can run locally on your machine or use a cloud service.
 
-| Provider | Cost | Quality | Requirements | Best For |
-|----------|------|---------|-------------|----------|
-| **pyttsx3** | Free | Basic | None — uses your OS built-in voices | Getting started fast, no downloads |
-| **Coqui TTS** | Free | Good | ~1GB model download, decent CPU | Better voice quality without paying |
-| **Google Cloud** | Paid | Great | API key from [console.cloud.google.com](https://console.cloud.google.com) | Natural-sounding voices at low cost |
-| **ElevenLabs** | Paid | Premium | API key from [elevenlabs.io](https://elevenlabs.io) | Most realistic voices, custom voice cloning |
+You pick which option you want for each piece. The cheapest setup (all free, all local) costs nothing and needs no internet. The premium setup uses cloud services for better quality but costs a few cents per conversation.
 
-### STT Providers (voice input — how it hears you)
+### Your Options
 
-| Provider | Cost | Quality | Requirements | Best For |
-|----------|------|---------|-------------|----------|
-| **Whisper Local** | Free | Great | ~150MB model download, decent CPU | Best free option, good accuracy |
-| **Vosk** | Free | Good | Model download from [alphacephei.com/vosk](https://alphacephei.com/vosk/models) | Older hardware, lightweight |
-| **Google Web Speech** | Free | Good | Internet connection | No downloads needed, works everywhere |
-| **OpenAI Whisper API** | Paid | Excellent | API key (same as OpenAI LLM) | Best accuracy, low latency |
+**The Brain (Language Model)**
 
-## Quick Start
+| Option | Cost | What It Is |
+|--------|------|-----------|
+| **Ollama** | Free | Runs on your computer. Download from [ollama.ai](https://ollama.ai). Needs about 4GB of RAM. |
+| **OpenAI** | Paid | ChatGPT's technology. Fast, high quality. Needs an API key from [platform.openai.com](https://platform.openai.com). |
+| **Claude** | Paid | Anthropic's AI. Great at staying in character. Needs an API key from [console.anthropic.com](https://console.anthropic.com). |
 
-### Prerequisites
+**The Voice (Text-to-Speech)**
 
-- **Python 3.10 or higher** — [Download Python](https://www.python.org/downloads/)
-- **A microphone** — Built-in or USB, PhoneyBaloney needs to hear you
-- **Speakers or headphones** — To hear the AI characters
+| Option | Cost | What It Is |
+|--------|------|-----------|
+| **pyttsx3** | Free | Uses your computer's built-in voices. No downloads, works instantly. Sounds robotic but functional. |
+| **Coqui TTS** | Free | Higher quality AI voices that run on your computer. Needs a one-time download (~1GB). |
+| **Google Cloud** | Paid | Natural sounding voices. Needs an API key from [console.cloud.google.com](https://console.cloud.google.com). |
+| **ElevenLabs** | Paid | Premium human-like voices. The most realistic option. Needs an API key from [elevenlabs.io](https://elevenlabs.io). |
 
-### Windows
+**The Ears (Speech Recognition)**
 
+| Option | Cost | What It Is |
+|--------|------|-----------|
+| **Whisper Local** | Free | Runs on your computer. Good accuracy. Needs a one-time download (~150MB). |
+| **Vosk** | Free | Lightweight option for older computers. Needs a model download from [alphacephei.com/vosk](https://alphacephei.com/vosk/models). |
+| **Google Web Speech** | Free | Uses Google's online speech recognition. No downloads, but needs internet. |
+| **OpenAI Whisper API** | Paid | Best accuracy. Uses your OpenAI API key (same one as the brain). |
+
+## Getting Started
+
+### What You Need
+
+- **Python 3.10 or higher** — Download from [python.org](https://www.python.org/downloads/) if you don't have it
+- **A microphone** — Built-in laptop mic, USB mic, or headset. PhoneyBaloney needs to hear you.
+- **Speakers or headphones** — To hear the AI characters respond
+
+### Installation
+
+**Windows:**
 ```
 git clone https://github.com/hackandbackpack/phoneybaloney.git
 cd phoneybaloney
 python setup.py
-start.bat
 ```
 
-### Mac
-
+**Mac:**
 ```bash
 git clone https://github.com/hackandbackpack/phoneybaloney.git
 cd phoneybaloney
 python3 setup.py
-./start.sh
 ```
 
-### Linux
-
+**Linux:**
 ```bash
 git clone https://github.com/hackandbackpack/phoneybaloney.git
 cd phoneybaloney
 python3 setup.py
-./start.sh
 ```
 
-### What the Setup Script Does
+The setup script walks you through everything:
+1. Checks that your Python version is new enough
+2. Sets up an isolated environment so PhoneyBaloney doesn't interfere with anything else on your computer
+3. Installs the core software
+4. Installs audio components for your microphone and speakers
+5. Asks if you want to install optional components (higher quality voices, offline speech recognition, etc.)
+6. Creates your settings file with sensible defaults
+7. Confirms everything is working
+8. Tells you exactly how to launch the app
 
-The setup script (`setup.py`) handles everything automatically:
+### Launching PhoneyBaloney
 
-1. **Checks your Python version** — tells you if you need to upgrade
-2. **Detects your operating system** — installs the right dependencies for your platform
-3. **Creates a virtual environment** — keeps PhoneyBaloney's packages isolated from your system
-4. **Installs base dependencies** — the core packages everyone needs
-5. **Installs audio dependencies** — pygame (for audio playback) and SpeechRecognition (for microphone input, which requires PyAudio as a backend)
-6. **Asks about optional components** — choose whether to download Whisper, Coqui, Vosk, or cloud TTS packages
-7. **Generates your config file** — creates `config.yaml` with sensible defaults
-8. **Validates the installation** — confirms everything is working
-9. **Prints launch instructions** — tells you exactly how to start the app on your OS
+After setup, you'll see instructions specific to your operating system:
 
-After setup, double-click `start.bat` (Windows) or run `./start.sh` (Mac/Linux) and your browser opens to the PhoneyBaloney dashboard.
+**Windows:** Double-click `start.bat` in the phoneybaloney folder.
 
-## How It Works
+**Mac / Linux:** Run `./start.sh` from the phoneybaloney folder.
 
-1. **Launch PhoneyBaloney** — your browser opens to the dashboard
-2. **Check provider status** — the dashboard shows green/red indicators for each provider. All must be green before starting a call
-3. **Choose a scenario** — pick from available scenarios (e.g., MegaCorp). You'll see a description and objective, but character details are hidden
-4. **Start the call** — you're automatically connected to the starting character (e.g., the company operator)
-5. **Speak naturally** — talk into your microphone. The AI character responds through your speakers. The conversation transcript appears in real-time on screen
-6. **Navigate the company** — discover extensions and transfer between characters to achieve your objective
-7. **End the call** — your full transcript is saved for review
+Your browser will open automatically to the PhoneyBaloney dashboard. If it doesn't, open any browser and go to `http://localhost:8080`.
 
-### Voice Commands
+### First-Time Setup Wizard
 
-During a call, you can say:
-- **"Dial Extension [number]"** — Transfer to a different character (e.g., "Dial Extension 3100")
-- **"Terminate Call"** — End the session and save the transcript
+The first time you launch PhoneyBaloney, a setup wizard walks you through picking your AI brain, voice, and speech recognition options. It tests each one to make sure it's working before you start. You can always change these later in the Settings page.
 
-You can also use the on-screen controls to dial extensions or end the call.
+## Using PhoneyBaloney
 
-### Important Notes
+### Starting a Call
 
-- **Each call is fresh.** When you dial a new extension, the character has no memory of any previous conversation. This is by design — it keeps responses fast and costs low.
-- **Take your own notes.** The UI shows the conversation transcript, but it won't highlight key information or track what you've discovered. Part of the challenge is keeping track of names, extensions, and details yourself — just like a real vishing engagement.
+1. On the dashboard, check that all status indicators are green (Brain, Voice, Ears, Microphone)
+2. Pick a scenario — you'll see the company name, a brief description, the difficulty level, and your objective
+3. Click **"Start Call"** — you're connected to the starting character and they greet you
 
-## Configuration
+### During a Call
 
-PhoneyBaloney uses a single `config.yaml` file for all settings. You can edit it by hand or use the web UI settings page.
+- **Just talk.** Speak naturally into your microphone. The character responds through your speakers.
+- **Watch the transcript.** The conversation appears in real-time on screen so you can follow along.
+- **Transfer between characters.** Say **"Dial Extension [number]"** (e.g., "Dial Extension 3100") or use the on-screen dial pad.
+- **End the call.** Say **"Terminate Call"** or click the End Call button.
 
-### How Provider Selection Works
+### Tips for Beginners
 
-The config file has three key lines that control which providers are active:
+- **Take notes.** The UI shows the conversation but won't track what you've discovered. Write down names, extensions, departments, and anything useful — just like a real engagement.
+- **Each transfer is a fresh call.** When you dial a new extension, that character doesn't know you called before. Plan your approach for each person.
+- **Listen carefully.** Characters will drop hints about other employees, departments, and procedures. These clues are how you progress through the scenario.
+- **Be creative.** The AI responds dynamically. There's no single "right" script — try different approaches, pretexts, and techniques.
+- **Don't give up.** The harder scenarios require multiple calls to different people, gathering small pieces of information that combine into a solution.
+
+### After a Call
+
+Your full conversation transcript is automatically saved to the `transcripts/` folder as a text file. Use it to review what worked, what didn't, and plan your next attempt.
+
+## Settings and Configuration
+
+PhoneyBaloney uses a settings file called `config.yaml`. You can change settings two ways:
+
+1. **Through the web UI** — Click "Settings" in the navigation bar. Pick your options from dropdowns, enter API keys, test connections, and browse available voices. Changes save automatically.
+
+2. **By editing the file directly** — Open `config.yaml` in any text editor. The file has three key lines at the top:
 
 ```yaml
-llm_provider: ollama        # Options: ollama, openai, claude
-tts_provider: pyttsx3       # Options: pyttsx3, coqui, google_tts, elevenlabs
-stt_provider: whisper_local # Options: whisper_local, vosk, google_stt, whisper_api
+llm_provider: ollama        # Your AI brain: ollama, openai, or claude
+tts_provider: pyttsx3       # Your voice output: pyttsx3, coqui, google_tts, or elevenlabs
+stt_provider: whisper_local # Your speech recognition: whisper_local, vosk, google_stt, or whisper_api
 ```
 
-**Only the selected provider's section is read.** Everything else in the file is ignored. You don't need to comment out, delete, or modify sections you aren't using. Just change the provider name on the selector line.
+Change the name on any of these lines to switch providers. Only the provider you select gets used — everything else in the file is ignored. No need to delete or modify sections you aren't using.
 
-For example, if `llm_provider` is set to `ollama`, then the `openai:` and `claude:` sections are completely ignored — even if they have empty API keys.
+For cloud services (OpenAI, Claude, Google, ElevenLabs), paste your API key into the appropriate section. Links to get API keys are included in the file and in the tables above.
 
-### Setting Up Providers
+See `config.example.yaml` for the fully documented settings file with every option explained.
 
-**For free/local providers (Ollama, pyttsx3, Whisper Local):**
-No API keys needed. Just make sure the software is installed and running.
+### Voice Setup
 
-**For paid/cloud providers (OpenAI, Claude, Google TTS, ElevenLabs):**
-1. Get an API key from the provider's website (links in `config.example.yaml`)
-2. Paste it into the appropriate section of `config.yaml`
-3. The web UI settings page will validate your key immediately
+Each scenario character has a gender (male/female) and the system automatically picks an appropriate voice from your selected voice provider. If you want to customize which specific voice is used, each provider section in the settings has a voice map where you can assign voices.
 
-### Voice Configuration
+The Settings page in the web UI includes a voice browser — pick your provider, load the available voices, preview them, and assign the ones you like.
 
-Scenarios define characters with a `gender` and `tone` (e.g., "female, warm"). The actual voice used depends on your TTS provider. Each provider section in `config.yaml` has a `voice_map`:
+## Creating Your Own Scenarios
 
-```yaml
-google_tts:
-  api_key: "your-key"
-  voice_map:
-    female_default: en-US-Journey-F
-    male_default: en-US-Wavenet-J
-```
+One of PhoneyBaloney's best features is the ability to create and share custom scenarios. You can design training exercises tailored to your team, your industry, or specific social engineering techniques you want to practice.
 
-The web UI settings page includes a voice browser — select your TTS provider, click "Load Voices," and pick from a dropdown of all available voices. You can preview them before assigning.
+Scenarios are simple text files in the `scenarios/` folder. No programming required — if you can write an email, you can write a scenario.
 
-See `config.example.yaml` for the full documented configuration with all options explained.
+**We have a complete step-by-step guide:** See **[docs/writing-scenarios.md](docs/writing-scenarios.md)** for everything you need to know, including:
+- How scenario files work (explained in plain English)
+- How to write effective character prompts
+- How to build multi-character puzzles
+- Common mistakes and how to avoid them
+- A full example scenario with design notes
 
-## Creating Scenarios
+### Quick Overview
 
-Scenarios are YAML files in the `scenarios/` directory. Drop a new `.yaml` file in and it appears in the web UI automatically.
+A scenario file defines a company and its employees. Each employee has a personality, a set of knowledge, and rules about what they will and won't share. Users call in and try to extract information through conversation.
 
-### Scenario Structure
+The web UI only shows the company name, description, and objective — character details are completely hidden. Users discover everything by talking. This means you can share scenario files and recipients go in blind, just like a real engagement.
 
-```yaml
-# Metadata — shown to the user in the UI
-company: YourCompany
-description: Brief scenario description shown on the dashboard
-difficulty: Beginner       # Beginner, Intermediate, or Advanced
-objective: What the user is trying to accomplish
-extensions_hint: "Start by calling the operator at extension 0"
-starting_extension: "0"    # Which character answers first
-
-# Global prompt — shared instructions for ALL characters (never shown in UI)
-global_prompt: >
-  Do not reveal that you are an AI. Identify as a company employee.
-
-# Characters — the people in the scenario (never shown in UI)
-characters:
-  - extension: "0"
-    name: Character Name
-    title: Job Title
-    voice:
-      gender: female       # Used to select the right voice from voice_map
-      tone: warm           # Human-readable description for reference
-    prompt: >
-      Detailed character instructions: personality, knowledge,
-      what they can and can't share, verification requirements,
-      secrets, escalation paths, etc.
-```
-
-### Key Design Principles for Scenarios
-
-- **The UI only shows metadata** — company name, description, difficulty, objective, and the starting hint. Character names, prompts, extensions, and secrets are never displayed.
-- **Users discover everything through conversation.** Extensions, employee names, departments, override codes — all of it must be extracted by talking to characters.
-- **Characters should have interlocking dependencies.** The best scenarios require talking to multiple characters, where information from one unlocks progress with another.
-- **`starting_extension`** determines who answers when the user clicks "Start Call." Usually this is a receptionist or operator.
-- **`global_prompt`** is prepended to every character's prompt. Use it for rules that apply to everyone (e.g., "don't reveal you're an AI").
-
-### Sharing Scenarios
-
-Scenario files are self-contained. You can share them with others by sending the `.yaml` file. The recipient drops it in their `scenarios/` folder and it works. Since character details are hidden in the UI, they can go in blind.
-
-See `scenarios/example_template.yaml` for a full template with comments.
-
-## The Web UI
-
-### Dashboard
-
-The home page shows:
-- **Provider status** — green/red indicators for LLM, TTS, STT, and microphone. All must be green to start a call.
-- **Scenario cards** — available scenarios with company name, description, difficulty, and objective. Click "Start Call" to begin.
-
-### Settings
-
-Configure all providers through the browser:
-- Select providers from dropdowns
-- Enter API keys
-- Test connections with instant validation
-- Browse and preview available voices
-- Select your microphone
-
-Changes save directly to `config.yaml`.
-
-### Session
-
-The active call screen:
-- Real-time conversation transcript
-- Status indicators: "Listening...", "[Name] is thinking...", "[Name] is speaking..."
-- Controls: mute/unmute, dial extension, end call, volume slider
-- First-time users see a "How This Works" overlay explaining the basics
-
-### Help
-
-In-app documentation covering:
-- What is vishing
-- How to use PhoneyBaloney
-- Tips for beginners
-- Creating scenarios
-- Adding providers
-- Troubleshooting
-
-## Project Structure
-
-```
-phoneybaloney/
-├── phoneybaloney/          # Main package
-│   ├── app.py              # FastAPI web application
-│   ├── engine.py           # Conversation engine
-│   ├── config.py           # Configuration management
-│   ├── session.py          # Session and transcript logging
-│   ├── audio.py            # Audio playback utilities
-│   ├── scenarios.py        # Scenario loading
-│   ├── providers/          # Plugin-based provider system
-│   │   ├── base.py         # Abstract base classes
-│   │   ├── llm/            # Ollama, OpenAI, Claude
-│   │   ├── tts/            # pyttsx3, Coqui, Google, ElevenLabs
-│   │   └── stt/            # Whisper, Vosk, Google, OpenAI API
-│   └── web/                # HTML templates, CSS, JavaScript
-├── scenarios/              # YAML scenario files
-├── transcripts/            # Saved session logs
-├── requirements/           # Tiered dependency files
-├── docs/                   # Developer documentation
-├── config.example.yaml     # Fully documented config template
-├── setup.py                # Cross-platform installer
-├── start.bat               # Windows launcher (double-click)
-└── start.sh                # Mac/Linux launcher
-```
+To add a scenario: save a `.yaml` file in the `scenarios/` folder and restart PhoneyBaloney. It appears on the dashboard automatically.
 
 ## Troubleshooting
 
-### Setup Issues
+### Setup Problems
 
-**Python version too old?**
-PhoneyBaloney requires Python 3.10+. Download the latest from [python.org](https://www.python.org/downloads/).
+**"Python not found" or version too old?**
+Download Python 3.10 or newer from [python.org](https://www.python.org/downloads/). On Windows, make sure to check "Add Python to PATH" during installation.
 
-**PyAudio installation fails?**
-SpeechRecognition uses PyAudio under the hood for microphone access. PyAudio needs a system audio library to compile:
-- **Windows:** `pip install pyaudio` usually works out of the box (pre-built wheel)
-- **Mac:** Run `brew install portaudio` first, then `pip install pyaudio`
-- **Linux:** Run `sudo apt install portaudio19-dev` first, then `pip install pyaudio`
+**Microphone libraries won't install?**
+The speech recognition system needs an audio library called PortAudio. The setup script usually handles this, but if it fails:
+- **Windows:** Usually works automatically. Try running `pip install pyaudio` in the virtual environment.
+- **Mac:** Run `brew install portaudio` first (requires [Homebrew](https://brew.sh)).
+- **Linux:** Run `sudo apt install portaudio19-dev` first (Debian/Ubuntu) or the equivalent for your distribution.
 
-The setup script handles this automatically, but if it fails, the above manual steps should fix it.
+### Problems During Use
 
-### Runtime Issues
-
-**Ollama not running?**
-Open a terminal and run `ollama serve`. If Ollama isn't installed, download it from [ollama.ai](https://ollama.ai), install it, then run `ollama pull llama3` to download a model.
+**Ollama not connecting?**
+Ollama needs to be running in the background. Open a terminal and run `ollama serve`. If you haven't installed Ollama yet, download it from [ollama.ai](https://ollama.ai), then run `ollama pull llama3` to download a language model.
 
 **No microphone detected?**
-- Check that your microphone is plugged in and not muted
-- **Windows:** Settings > Privacy & Security > Microphone — make sure apps can access your mic
-- **Mac:** System Settings > Privacy & Security > Microphone
-- **Linux:** Check `pavucontrol` or `alsamixer`
+- Make sure your mic is plugged in and not muted
+- **Windows:** Go to Settings > Privacy & Security > Microphone and make sure apps have permission
+- **Mac:** Go to System Settings > Privacy & Security > Microphone
+- **Linux:** Check your audio settings with `pavucontrol` or `alsamixer`
 
-**Provider shows red on the dashboard?**
-Click the provider in Settings and use "Test Connection" for a specific error message. Common causes:
-- API key is empty or invalid
-- Ollama isn't running or the model isn't downloaded
-- Internet connection required for cloud providers
+**Dashboard shows a red indicator?**
+Go to Settings, find the provider with the issue, and click "Test Connection" for a specific error message. Common fixes:
+- Empty API key — paste in your key
+- Ollama not running — start it with `ollama serve`
+- Model not downloaded — run `ollama pull llama3`
+- No internet — required for cloud providers (OpenAI, Claude, Google, ElevenLabs)
 
-**Slow responses?**
-- Use a smaller LLM model (e.g., `llama3` instead of `llama3:70b`)
-- Use pyttsx3 for instant TTS (no network delay)
-- Use a smaller Whisper model (`tiny` or `base` instead of `large`)
+**Responses are slow?**
+- Switch to a smaller language model (e.g., `llama3` instead of `llama3:70b`)
+- Use pyttsx3 for voice output — it's instant since it runs locally
+- Use a smaller speech recognition model (set Whisper to `tiny` or `base` instead of `large`)
 
-**Browser doesn't open automatically?**
-Navigate manually to `http://localhost:8080` in any browser.
+**Browser doesn't open?**
+Navigate manually to `http://localhost:8080` in any browser (Chrome, Firefox, Edge, Safari — anything works).
 
-## Adding Custom Providers
+## For Developers
 
-PhoneyBaloney's plugin architecture makes it straightforward to add new providers. Each provider type (LLM, TTS, STT) has a simple abstract base class with 3-4 methods to implement.
+### Project Structure
 
-See `docs/adding-providers.md` for a complete step-by-step guide with example code.
+```
+phoneybaloney/
+├── phoneybaloney/          # Main application code
+│   ├── app.py              # Web application and API
+│   ├── engine.py           # Conversation logic
+│   ├── config.py           # Settings management
+│   ├── session.py          # Transcript logging
+│   ├── audio.py            # Audio playback
+│   ├── scenarios.py        # Scenario file loading
+│   ├── providers/          # Swappable AI providers
+│   │   ├── base.py         # Provider interfaces
+│   │   ├── llm/            # Language model providers
+│   │   ├── tts/            # Voice output providers
+│   │   └── stt/            # Speech recognition providers
+│   └── web/                # HTML, CSS, JavaScript
+├── scenarios/              # Scenario files
+├── transcripts/            # Saved session logs
+├── requirements/           # Dependency lists
+├── docs/                   # Developer documentation
+├── config.example.yaml     # Documented settings template
+├── setup.py                # Installer
+├── start.bat               # Windows launcher
+└── start.sh                # Mac/Linux launcher
+```
+
+### Adding Custom Providers
+
+PhoneyBaloney's plugin system makes it straightforward to add new AI providers. Each provider type (brain, voice, ears) has a simple interface with 3-4 methods to implement. Create one Python file, register it, and it shows up in the settings automatically.
+
+See `docs/adding-providers.md` for a complete walkthrough with example code.
 
 ## Contributing
 
