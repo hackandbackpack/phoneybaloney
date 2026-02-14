@@ -1,0 +1,46 @@
+# Scenario Template — Copy this file and customize it
+#
+# Metadata fields (shown in the web UI):
+#   company, description, difficulty, objective, extensions_hint
+#
+# Secret fields (never shown in UI — users discover through conversation):
+#   global_prompt, characters
+#
+# Voice settings are provider-agnostic. Specify gender and tone here;
+# the actual voice ID is mapped in config.yaml under each TTS provider.
+
+company: Your Company Name
+description: >
+  Brief description of the scenario shown to users before they start.
+difficulty: Beginner  # Options: Beginner, Intermediate, Advanced
+objective: >
+  What the user is trying to accomplish. This is shown in the UI.
+extensions_hint: "Start by calling the operator at extension 0"
+starting_extension: "0"
+
+global_prompt: >
+  Instructions that apply to ALL characters. Typically includes:
+  - Do not reveal you are an AI
+  - General behavior guidelines
+  - Company-wide policies
+
+characters:
+  - extension: "0"
+    name: Character Name
+    title: Job Title
+    voice:
+      gender: female  # female or male
+      tone: warm      # Descriptive tone for future voice selection
+    prompt: >
+      Detailed instructions for this character. Include:
+      - Their personality and communication style
+      - What information they know
+      - What information they will/won't share
+      - How they verify identity
+      - What other extensions they can refer callers to
+      - Any secrets or flags hidden in the scenario
+
+  # Add more characters with unique extensions:
+  # - extension: "100"
+  #   name: Another Character
+  #   ...
