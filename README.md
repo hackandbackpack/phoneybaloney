@@ -93,7 +93,7 @@ The setup script (`setup.py`) handles everything automatically:
 2. **Detects your operating system** — installs the right dependencies for your platform
 3. **Creates a virtual environment** — keeps PhoneyBaloney's packages isolated from your system
 4. **Installs base dependencies** — the core packages everyone needs
-5. **Installs audio dependencies** — platform-specific audio libraries (PyAudio, pygame)
+5. **Installs audio dependencies** — pygame (for audio playback) and SpeechRecognition (for microphone input, which requires PyAudio as a backend)
 6. **Asks about optional components** — choose whether to download Whisper, Coqui, Vosk, or cloud TTS packages
 7. **Generates your config file** — creates `config.yaml` with sensible defaults
 8. **Validates the installation** — confirms everything is working
@@ -287,10 +287,12 @@ phoneybaloney/
 PhoneyBaloney requires Python 3.10+. Download the latest from [python.org](https://www.python.org/downloads/).
 
 **PyAudio installation fails?**
-PyAudio needs a system audio library:
-- **Windows:** `pip install pyaudio` usually works out of the box
+SpeechRecognition uses PyAudio under the hood for microphone access. PyAudio needs a system audio library to compile:
+- **Windows:** `pip install pyaudio` usually works out of the box (pre-built wheel)
 - **Mac:** Run `brew install portaudio` first, then `pip install pyaudio`
 - **Linux:** Run `sudo apt install portaudio19-dev` first, then `pip install pyaudio`
+
+The setup script handles this automatically, but if it fails, the above manual steps should fix it.
 
 ### Runtime Issues
 
