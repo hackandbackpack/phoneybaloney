@@ -1,0 +1,83 @@
+# PhoneyBaloney Configuration
+# Copy this file to config.yaml and fill in your provider settings.
+# Only the selected provider's section is used — everything else is ignored.
+
+# ============================================================================
+# Provider Selection
+# Change these to switch providers. No need to comment/uncomment sections.
+# ============================================================================
+llm_provider: ollama        # Options: ollama, openai, claude
+tts_provider: pyttsx3       # Options: pyttsx3, coqui, google_tts, elevenlabs
+stt_provider: whisper_local # Options: whisper_local, vosk, google_stt, whisper_api
+
+# ============================================================================
+# Scenario & Logging
+# ============================================================================
+scenario: megacorp           # Default scenario to load (filename without .yaml)
+log_transcripts: true        # Save session transcripts to transcripts/
+
+# ============================================================================
+# LLM Providers (conversation intelligence)
+# ============================================================================
+
+# Ollama — Free, local. Requires Ollama installed: https://ollama.ai
+ollama:
+  model: llama3              # Run: ollama pull llama3
+  url: http://localhost:11434
+
+# OpenAI — Paid API. Get key: https://platform.openai.com/api-keys
+openai:
+  api_key: ""
+  model: gpt-4o
+
+# Claude — Paid API. Get key: https://console.anthropic.com/
+claude:
+  api_key: ""
+  model: claude-sonnet-4-5-20250929
+
+# ============================================================================
+# TTS Providers (voice output)
+# ============================================================================
+
+# pyttsx3 — Free, offline. Uses your OS built-in voices. No setup needed.
+pyttsx3:
+  rate: 175                  # Speech rate (words per minute)
+  voice_map:
+    female_default: ""       # Leave empty to auto-select system voice
+    male_default: ""
+
+# Coqui TTS — Free, neural quality. Requires model download (~1GB).
+coqui:
+  model: tts_models/en/ljspeech/tacotron2-DDC
+
+# Google Cloud TTS — Mid-tier. Get key: https://console.cloud.google.com/
+google_tts:
+  api_key: ""
+  voice_map:
+    female_default: en-US-Journey-F
+    male_default: en-US-Wavenet-J
+
+# ElevenLabs — Premium quality. Get key: https://elevenlabs.io/
+elevenlabs:
+  api_key: ""
+  voice_map:
+    female_default: ""       # Use voice browser in Settings to find IDs
+    male_default: ""
+
+# ============================================================================
+# STT Providers (voice input)
+# ============================================================================
+
+# Whisper Local — Free, offline. Requires model download (~150MB for base).
+whisper_local:
+  model: base                # Options: tiny, base, small, medium, large
+
+# Vosk — Free, lightweight offline. Download models: https://alphacephei.com/vosk/models
+vosk:
+  model_path: ""             # Path to downloaded Vosk model directory
+
+# Google Web Speech — Free, cloud-based. No API key needed. Requires internet.
+google_stt: {}
+
+# OpenAI Whisper API — Paid, high accuracy. Uses your OpenAI API key.
+whisper_api: {}
