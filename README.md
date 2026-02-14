@@ -150,6 +150,20 @@ The first time you launch PhoneyBaloney, a setup wizard walks you through pickin
 - **Transfer between characters.** Say **"Dial Extension [number]"** (e.g., "Dial Extension 3100") or use the on-screen dial pad.
 - **End the call.** Say **"Terminate Call"** or click the End Call button.
 
+### A Note About AI Models
+
+The quality of your conversations depends heavily on which AI brain (language model) you're using. Larger, more capable models stay in character better, follow their instructions more closely, and produce more realistic conversations. Smaller or less capable models may:
+
+- **Break character** — suddenly talk about being an AI or forget who they're supposed to be
+- **Ignore their instructions** — share information they're supposed to protect, or refuse to share things they should
+- **Make up nonsense** — invent departments, employees, or procedures that don't exist in the scenario
+- **Give short or robotic answers** — respond with one-word answers instead of natural conversation
+- **Go off the rails** — start talking about completely unrelated topics
+
+This isn't a bug — it's a limitation of the AI model. Think of it like casting actors in a play: a skilled actor (larger model) delivers a convincing performance, while an inexperienced one (smaller model) might forget their lines or improvise badly.
+
+**If conversations feel weird or characters aren't behaving right**, try upgrading your model before adjusting the scenario. For Ollama, try `llama3:8b` or larger. For cloud providers (OpenAI, Claude), the default models are already very capable.
+
 ### Tips for Beginners
 
 - **Take notes.** The UI shows the conversation but won't track what you've discovered. Write down names, extensions, departments, and anything useful — just like a real engagement.

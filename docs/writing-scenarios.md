@@ -228,6 +228,21 @@ Each character holds one piece of the puzzle. The user has to talk to everyone a
 - **Reward persistence.** Characters who say "no" the first time might reveal something useful if the user asks the right follow-up question.
 - **Use realistic pressure points.** "I'm calling from the CEO's office" or "This is urgent, the system is down" — characters should respond to these the way real employees would.
 
+## A Note About AI Model Quality
+
+How well your characters behave depends on the AI language model the user is running. More capable models (like GPT-4o, Claude, or larger Ollama models) follow character instructions closely and stay in character. Smaller or less capable models might:
+
+- Forget their character's rules and give away information they shouldn't
+- Break character and mention being an AI
+- Invent things that aren't in the scenario (fake employees, departments, etc.)
+- Give flat or robotic responses that don't feel like a real conversation
+
+**What this means for scenario authors:**
+- Write clear, explicit prompts. Don't rely on the AI to "figure out" what you mean. Spell out exactly what the character should and shouldn't do.
+- Use strong wording for important rules: "You will NEVER share..." is better than "You prefer not to share..."
+- Test your scenario with the same type of model your users will likely run. If your audience is using free local models (Ollama), test with those — not just premium cloud models.
+- If characters aren't following their prompts well on smaller models, try simplifying the prompt. Shorter, more direct instructions work better with less capable models.
+
 ## Voice Settings
 
 Each character has a `voice` section:
